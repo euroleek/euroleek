@@ -1,0 +1,107 @@
+sql 생성 !!!!!!!!!!!!!!!!!!!!
+
+create table member1
+(
+    user_no number primary key,
+    userid varchar2(20),
+    userpwd varchar2(30)
+
+);
+
+create sequence member_seq;
+
+CREATE TABLE board (
+	boardnum 	NUMBER 			PRIMARY KEY,	
+	userid		VARCHAR2(20)	NOT NULL,		
+	title 		VARCHAR2(100)	NOT NULL,		
+	content 	VARCHAR2(2000)	NOT NULL,		
+	inputdate 	DATE			DEFAULT SYSDATE,
+	hit 		NUMBER			DEFAULT 0,
+	originalfilename VARCHAR2(50),
+	savedfilename VARCHAR2(50),
+	CONSTRAINT BOARD_FK FOREIGN KEY(userid)
+	REFERENCES member1(userid) ON DELETE CASCADE
+);
+
+create sequence board_seq;
+
+create sequence reply_seq;
+
+CREATE TABLE reply (
+replynum NUMBER PRIMARY KEY,
+boardnum NUMBER NOT NULL CONSTRAINT REPLY_BOARDNUM_FK REFERENCES board(boardnum) ON DELETE CASCADE,
+userid VARCHAR2(20)NOT NULL CONSTRAINT REPLY_USERID_FK REFERENCES member(userid) ON DELETE CASCADE,
+replytext VARCHAR2(1000)NOT NULL,
+inputdate DATE DEFAULT SYSDATE
+);
+
+----------------------------------테스트용-----------------------------
+병원은 excel 파일로 받아 영업/정상인 애들만 필터로 거르고 개네중에 
+사업번호 num
+사업자명 id
+번호 phone
+주소 location
+x값 xValue
+y값 yValue
+
+--------------두 점의 거리 계산 함수
+create or replace FUNCTION calc_distance(
+ pLat1 NUMBER,
+ pLon1 NUMBER,
+ pLat2 NUMBER,
+ pLon2 NUMBER)
+ RETURN NUMBER
+IS
+
+-- r is the spherical radius of earth in Kilometers
+cSpherRad CONSTANT NUMBER := 6367;
+                                                                        -- The spherical radius of earth in miles is 3956
+a        NUMBER;
+vLat     NUMBER;
+vLat1Rad NUMBER;
+vLat2Rad NUMBER;
+vLon     NUMBER;
+vLon1Rad NUMBER;
+vLon2Rad NUMBER;
+
+BEGIN
+  /*
+  Most computers require the arguments of trigonometric functions to be
+  expressed in radians. To convert lon1, lat1 and lon2,lat2 from
+  degrees,minutes, seconds to radians, first convert them to decimal
+  degrees. To convert decimal degrees to radians, multiply the number
+  of degrees by pi/180 = 0.017453293 radians/degrees.
+  */
+
+  vLat1Rad := pLat1 * 0.017453293;
+  vLat2Rad := pLat2 * 0.017453293;
+  vLon1Rad := pLon1 * 0.017453293;
+  vLon2Rad := pLon2 * 0.017453293;
+
+  vLon := vLon2Rad - vLon1Rad;
+  vLat := vLat2Rad - vLat1Rad;
+
+  a := POWER(SIN(vLat/2),2) + COS(vLat1Rad) * COS(vLat2Rad) *
+  POWER(SIN(vLon/2),2);
+
+  /*
+  The intermediate result c is the great circle distance in radians.
+  Inverse trigonometric functions return results expressed in radians.
+  To express c in decimal degrees, multiply the number of radians by
+   180/pi = 57.295780 degrees/radian.
+  The great circle distance d will be in the same units as r.
+  */
+
+  RETURN ROUND(cSpherRad * 2 * ATAN2(SQRT(a), SQRT(1-a)),1);
+EXCEPTION
+  WHEN OTHERS THEN
+    RETURN 999;
+END calc_distance;
+
+-----------------지도설정
+사용자명 id
+번호 num
+사업자소재지전체주소  location
+전화전호 phone
+위도 xValue
+경도 yValue

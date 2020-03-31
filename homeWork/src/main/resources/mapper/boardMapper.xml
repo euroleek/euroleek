@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sesoc.euro.dao.BoardMapper">
+		
+	<select id="boardList" resultType = "boardVO">
+	select 
+		*
+	from
+		board
+	where
+		<choose>
+			<when test="searchItem=='content'">content</when>
+			<when test="searchItem=='userid'">userid</when>
+			<when test="searchItem=='title'">title</when>
+		</choose>
+		like '%'||#{searchKeyword}||'%'
+	order by
+		boardnum
+	</select>
+	
+	<insert id="write" parameterType="boardVO">
+	insert into
+		board
+	values
+	(
+			board_seq.nextval
+			, #{userid}
+			, #{title}
+			, #{content}
+			, sysdate
+			, #{hit}
+			<choose>
+				<when test="originalFileName != null and savedFileName != null">
+				, #{originalFileName}
+				, #{savedFileName}
+				</when>
+				<otherwise>
+				,null
+				,null
+				</otherwise>
+			
+			</choose>
+			
+	)
+	</insert>
+	
+	<update id="update" parameterType="boardVO">
+	update
+    	board
+	set
+   		hit= hit + 1
+	where
+    	boardnum = #{boardnum}
+	</update>
+	
+	<update id="updateboard" parameterType="boardVO">
+		update
+			board
+		set
+			title = #{title}
+			,content = #{content}
+			<choose>
+				<when test="originalFileName != null and savedFileName != null">
+				,originalfilename = #{originalFileName}
+				,savedfilename = #{savedFileName}
+				</when>
+			</choose>
+		where
+			boardnum = #{boardnum}
+			and userid = #{userid}
+	</update>
+
+	<select id = "read" resultType="boardVO" parameterType="boardVO">
+	select 
+		*
+	from
+		board
+	where
+		boardnum = #{boardnum}
+	
+	</select>
+	
+	<delete id="delete" parameterType="boardVO">
+	delete 
+		board
+	where
+		boardnum = #{boardnum}
+		and userid = #{userid}
+	
+	</delete>
+	
+	<update id="deleteFile" parameterType="boardVO">
+		update
+			board
+		set
+			originalfilename = ''
+			,savedfilename = ''
+			
+		where
+			boardnum = #{boardnum}
+			and userid = #{userid}
+	</update>
+	
+	<select id="getTotal" parameterType="map" resultType="int">
+	select 
+		count(*)
+	from 
+		board
+	where
+		<choose>
+			<when test="searchItem == 'userid'">userid</when>
+			<when test="searchItem == 'title'">title</when>
+			<when test="searchItem == 'content'">content</when>
+		</choose>
+		like '%'||#{searchKeyword}||'%'
+	</select>
+	
+	</mapper>

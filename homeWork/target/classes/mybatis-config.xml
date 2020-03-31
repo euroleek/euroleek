@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<setting name="jdbcTypeForNull" value="NULL" />
+	</settings>
+	
+	<typeAliases>
+ 		<typeAlias type="com.sesoc.euro.vo.MemberVO" alias="memberVO"/>
+ 		<typeAlias type="com.sesoc.euro.vo.BoardVO" alias="boardVO"/>
+ 		<typeAlias type="com.sesoc.euro.vo.ReplyVO" alias="replyVO"/>
+ 		<typeAlias type="com.sesoc.euro.vo.HospitalVO" alias="hospitalVO"/>
+	</typeAliases>
+	<mappers>
+		<mapper resource="mapper/memberMapper.xml" />
+		<mapper resource="mapper/boardMapper.xml" />
+		<mapper resource="mapper/replyMapper.xml" />
+		
+	</mappers>
+</configuration>

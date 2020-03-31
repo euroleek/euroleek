@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sesoc.euro.dao.MemberMapper">
+	
+	<select id="checkid" parameterType="string" resultType = "int">
+	select 
+		count(*)
+	from
+		MEMBER1
+	where
+		userid = #{userid} 
+	</select>
+	
+	<insert id="signup" parameterType="memberVO">
+	insert into
+			MEMBER1
+		values(
+			member_seq.nextval,
+			#{userid},
+			#{userpwd},
+			#{cat_birth}
+		)
+	</insert>
+	
+	<select id="login" parameterType="memberVO" resultType = "int">
+	select 
+		count(*)
+	from
+		MEMBER1
+	where
+		userid = #{userid} 
+		and userpwd = #{userpwd}
+	
+	</select>
+	
+	<select id="list" resultType = "memberVO">
+	select
+		userid,
+		cat_birth
+	from
+		member1
+	</select>
+	
+	
+
+	
+	<select id="hoList" parameterType= "hospitalVO" resultType = "hospitalVO">
+	select 
+		id
+		,phone
+		,location
+		,xValue
+		,yValue
+		
+	from 
+		hospital 
+	order by  
+		 calc_distance(XValue, YValue, #{xValue},#{yValue})
+	</select>
+	
+	
+</mapper>
